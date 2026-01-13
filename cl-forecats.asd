@@ -22,5 +22,6 @@
   :license "MIT"
   :depends-on (#:cl-forecats #:fiveam)
   :components ((:module "tests"
-                :components ((:file "tests"))))
+                :components ((:file "tests")
+                             (:file "na-tests"))))
   :perform (asdf:test-op (op c) (symbol-call :fiveam :run! :cl-forecats-suite)))

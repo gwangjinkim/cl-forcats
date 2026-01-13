@@ -3,15 +3,20 @@
 (defun factor (data &key levels ordered)
   "Create a factor from sequence DATA. 
 If LEVELS is nil, unique values are extracted from DATA and sorted alphabetically.
-Coerces elements of DATA to strings robustly (handles symbols, numbers)."
+Coerces elements of DATA to strings robustly (handles symbols, numbers).
+Treats NIL or CL-VCTRS-LITE:*NA* as missing values."
   (let* ((data-list (coerce data 'list))
          (unique-values (if levels
                             (mapcar #'ensure-string levels)
-                            (sort (delete-duplicates (mapcar #'ensure-string (remove nil data-list)) :test #'string=) #'string<)))
+                            (sort (delete-duplicates 
+                                   (mapcar #'ensure-string 
+                                           (remove-if (lambda (x) (or (null x) (na-p x))) data-list)) 
+                                   :test #'string=) 
+                                  #'string<)))
          (levels-vec (coerce unique-values 'vector))
          (int-data (map 'vector
                         (lambda (x)
-                          (if (null x)
+                          (if (or (null x) (na-p x))
                               0
                               (let ((pos (position (ensure-string x) levels-vec :test #'string=)))
                                 (if pos (1+ pos) 0))))
@@ -38,5 +43,5 @@ Coerces elements of DATA to strings robustly (handles symbols, numbers)."
                     (levels (factor-levels x))
                     (val (aref data i)))
                (if (or (null val) (zerop val))
-                   "NA"
+                   cl-vctrs-lite:*na*
                    (aref levels (1- val))))))))
