@@ -1,13 +1,13 @@
-# cl-forcats: Categorical Variables for Common Lisp
+# cl-forecats: Categorical Variables for Common Lisp
 
-`cl-forcats` is a Common Lisp port of the famous R package **forcats**. It provides a robust, efficient, and user-friendly way to handle **categorical data** (factors).
+`cl-forecats` is a Common Lisp port of the famous R package **forcats**. It provides a robust, efficient, and user-friendly way to handle **categorical data** (factors).
 
 Categorical variables (or factors) are variables that have a fixed and known set of possible values (levels). They are essential for:
 -   **Plotting**: Controlling the order of bars or lines.
 -   **Modeling**: Ensuring consistent encoding of categories.
 -   **Data Analysis**: Moving away from fragile string comparisons to robust, indexed representations.
 
-`cl-forcats` is part of the `cl-tidyverse` ecosystem.
+`cl-forecats` is part of the `cl-tidyverse` ecosystem.
 
 ---
 
@@ -15,7 +15,7 @@ Categorical variables (or factors) are variables that have a fixed and known set
 
 If you know `forcats` in R, you are already at home. Most functions follow the mapping `fct_xxx` ⮕ `fct-xxx`.
 
-| R `forcats` | Common Lisp `cl-forcats` | Description |
+| R `forcats` | Common Lisp `cl-forecats` | Description |
 | :--- | :--- | :--- |
 | `factor(x)` | `(factor x)` | Create a factor from a sequence |
 | `fct_reorder()` | `(fct-reorder f v :fun #'mean)` | Reorder levels by another variable |
@@ -35,7 +35,7 @@ If you know `forcats` in R, you are already at home. Most functions follow the m
 
 In Lisp, we often use symbols or strings for categories. While symbols are great, they don't have an inherent **order** beyond alphabetization. 
 
-A **Factor** in `cl-forcats` is a specialized data structure that separates the **data** from the **labels**.
+A **Factor** in `cl-forecats` is a specialized data structure that separates the **data** from the **labels**.
 -   **Data**: An integer vector (indices).
 -   **Levels**: A vector of unique labels (strings).
 
@@ -56,7 +56,7 @@ This makes operations like "reversing the order of levels" extremely fast becaus
 Use the `factor` sugar function. It's smart enough to coerce symbols, keywords, and numbers to strings automatically.
 
 ```lisp
-(use-package :cl-forcats)
+(use-package :cl-forecats)
 
 ;; From a list of strings
 (factor '("apple" "banana" "apple"))
@@ -113,11 +113,55 @@ Tired of having 50 categories where 45 of them only appear once? Collapse them i
 
 ---
 
+## 🔗 Tidyverse Integration
+
+`cl-forecats` is built to work seamlessly with `cl-tibble` and `cl-dplyr`.
+
+### Using Factors in a Tibble
+
+When you create a tibble, you can include factor columns. `cl-tibble` will recognize them and display the `<fct>` tag.
+
+```lisp
+(defparameter *df* 
+  (cl-tibble:tibble 
+    :name '("Alice" "Bob" "Charlie" "David")
+    :group (factor '("A" "B" "A" "B"))))
+
+;; Output in REPL:
+;; #<TIBBLE 4x2>
+;;   name    group
+;;   <chr>   <fct>
+;; 1 Alice   A    
+;; 2 Bob     B    
+;; 3 Charlie A    
+;; 4 David   B    
+```
+
+### Mutating Factors with `cl-dplyr`
+
+The real power comes when using `cl-dplyr:mutate` to transform factors on the fly.
+
+```lisp
+(cl-dplyr:mutate *df*
+  :group (fct-recode :group "Alpha" "A" "Beta" "B"))
+```
+
+### Advanced: Reordering for Plots
+
+If you are using a plotting library (like a future `cl-ggplot2`), you can reorder your data before plotting:
+
+```lisp
+(cl-dplyr:mutate *df*
+  :name (fct-reorder :name :some-value-column))
+```
+
+---
+
 ## 📦 Installation
 
 ```lisp
 ;; Not on Quicklisp yet, so clone to your local-projects
-(asdf:load-system :cl-forcats)
+(asdf:load-system :cl-forecats)
 ```
 
 ## 🧪 Testing
@@ -125,7 +169,7 @@ Tired of having 50 categories where 45 of them only appear once? Collapse them i
 We use `FiveAM` for testing. You can run the tests via ASDF:
 
 ```lisp
-(asdf:test-system :cl-forcats)
+(asdf:test-system :cl-forecats)
 ```
 
 Or via the provided Roswell script:

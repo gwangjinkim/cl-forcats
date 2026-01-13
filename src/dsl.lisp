@@ -1,4 +1,4 @@
-(in-package #:cl-forcats)
+(in-package #:cl-forecats)
 
 (defun factor (data &key levels ordered)
   "Create a factor from sequence DATA. 
@@ -27,7 +27,16 @@ Coerces elements of DATA to strings robustly (handles symbols, numbers)."
             (length (factor-data f))
             (coerce (factor-levels f) 'list))))
 
-;; For cl-tibble to show <fct>
-;; (defmethod cl-tibble:type-abbreviation ((x factor)) "fct")
-;; (defmethod cl-tibble:format-column-value ((x factor)) ...)
-;; Since I don't have cl-tibble loaded here, I'll just provide the DSL for now.
+;; Integration with cl-tibble/cl-dplyr
+;; We define methods for cl-tibble to show <fct> and format values correctly.
+
+(eval-when (:compile-toplevel :load-toplevel :execute)
+  (when (find-package :cl-tibble)
+    (eval `(defmethod ,(intern "TYPE-ABBREVIATION" :cl-tibble) ((x factor)) "fct"))
+    (eval `(defmethod ,(intern "FORMAT-COLUMN-VALUE" :cl-tibble) ((x factor) i)
+             (let* ((data (factor-data x))
+                    (levels (factor-levels x))
+                    (val (aref data i)))
+               (if (or (null val) (zerop val))
+                   "NA"
+                   (aref levels (1- val))))))))

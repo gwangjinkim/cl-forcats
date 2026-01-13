@@ -1,4 +1,4 @@
-(asdf:defsystem #:cl-forcats
+(asdf:defsystem #:cl-forecats
   :description "Categorical variables (factors) for Common Lisp"
   :author "DeepMind Antigravity"
   :license "MIT"
@@ -14,13 +14,13 @@
                              (:file "modify")
                              (:file "utils-fct")
                              (:file "dsl"))))
-  :in-order-to ((asdf:test-op (asdf:test-op #:cl-forcats/tests))))
+  :in-order-to ((asdf:test-op (asdf:test-op #:cl-forecats/tests))))
 
-(asdf:defsystem #:cl-forcats/tests
-  :description "Tests for cl-forcats"
+(asdf:defsystem #:cl-forecats/tests
+  :description "Tests for cl-forecats"
   :author "DeepMind Antigravity"
   :license "MIT"
-  :depends-on (#:cl-forcats #:fiveam)
+  :depends-on (#:cl-forecats #:fiveam)
   :components ((:module "tests"
                 :components ((:file "tests"))))
-  :perform (asdf:test-op (op c) (symbol-call :fiveam :run! :cl-forcats-suite)))
+  :perform (asdf:test-op (op c) (symbol-call :fiveam :run! :cl-forecats-suite)))

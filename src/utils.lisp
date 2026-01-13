@@ -1,6 +1,6 @@
-(in-package #:cl-forcats)
+(in-package #:cl-forecats)
 
-;; Utility functions for cl-forcats
+;; Utility functions for cl-forecats
 
 (defun mean (list)
   "Calculate the average of a list of numbers."

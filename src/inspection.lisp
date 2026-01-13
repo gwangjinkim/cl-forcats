@@ -1,4 +1,4 @@
-(in-package #:cl-forcats)
+(in-package #:cl-forecats)
 
 (defun fct-count (f &key sort prop)
   "Count occurrences of each level in factor F.

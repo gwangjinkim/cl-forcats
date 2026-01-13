@@ -1,14 +1,14 @@
-# SPEC.md: cl-forcats
+# SPEC.md: cl-forecats
 
-`cl-forcats` is a Common Lisp library for handling categorical variables (factors), inspired by the R package `forcats`. It is part of the `cl-tidyverse` ecosystem.
+`cl-forecats` is a Common Lisp library for handling categorical variables (factors), inspired by the R package `forcats`. It is part of the `cl-tidyverse` ecosystem.
 
 ## Philosophy
 
-The goal of `cl-forcats` is to provide a clean, functional API for manipulating factors. Factors are used to store categorical data where the order of levels matters (e.g., for plotting, tables, or statistical modeling), or where it's useful to have a fixed set of possible values.
+The goal of `cl-forecats` is to provide a clean, functional API for manipulating factors. Factors are used to store categorical data where the order of levels matters (e.g., for plotting, tables, or statistical modeling), or where it's useful to have a fixed set of possible values.
 
 ## Data Structure: Factor
 
-A `factor` in `cl-forcats` is a structure that stores:
+A `factor` in `cl-forecats` is a structure that stores:
 - `data`: An integer vector (usually `(unsigned-byte 32)` or similar) representing the indices of levels.
 - `levels`: A sequence (usually a list or vector of strings) representing the categorical labels.
 - `ordered`: A boolean indicating if the levels have a meaningful order (optional, defaults to `nil`).
@@ -43,7 +43,7 @@ Index `0` in `data` usually represents `NA` or "Missing", while indices `1` to `
 ## Integration
 
 ### cl-vctrs-lite
-`cl-forcats` factors should be recognized as a valid vector type in the `cl-vctrs-lite` ecosystem.
+`cl-forecats` factors should be recognized as a valid vector type in the `cl-vctrs-lite` ecosystem.
 
 ### cl-tibble & cl-dplyr
 - `fct-reorder` should be easily usable inside `dplyr:mutate`.

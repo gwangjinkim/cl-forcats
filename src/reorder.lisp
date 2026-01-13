@@ -1,4 +1,4 @@
-(in-package #:cl-forcats)
+(in-package #:cl-forecats)
 
 (defun fct-rev (f)
   "Reverse the order of levels."

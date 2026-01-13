@@ -1,4 +1,4 @@
-(defpackage #:cl-forcats
+(defpackage #:cl-forecats
   (:use #:cl #:cl-vctrs-lite)
   (:export #:factor
            #:factor-p

@@ -1,4 +1,4 @@
-(in-package #:cl-forcats)
+(in-package #:cl-forecats)
 
 (defstruct (factor (:constructor %make-factor))
   "A categorical variable representation.

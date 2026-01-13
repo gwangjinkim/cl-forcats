@@ -1,10 +1,10 @@
-(defpackage #:cl-forcats-tests
-  (:use #:cl #:cl-forcats #:fiveam))
+(defpackage #:cl-forecats-tests
+  (:use #:cl #:cl-forecats #:fiveam))
 
-(in-package #:cl-forcats-tests)
+(in-package #:cl-forecats-tests)
 
-(def-suite :cl-forcats-suite)
-(in-suite :cl-forcats-suite)
+(def-suite :cl-forecats-suite)
+(in-suite :cl-forecats-suite)
 
 (test basic-factor-creation
   (let ((f (make-factor #(1 2 1) :levels '("A" "B"))))

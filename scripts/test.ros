@@ -4,14 +4,14 @@
 
 ;; Load local .asd from repo root
 (let* ((root (uiop:getcwd))
-       (asd  (merge-pathnames "cl-forcats.asd" root)))
+       (asd  (merge-pathnames "cl-forecats.asd" root)))
   (asdf:load-asd asd))
 
-(format t "~&[cl-forcats] running tests...~%")
+(format t "~&[cl-forecats] running tests...~%")
 
 (handler-case
     (progn
-      (asdf:test-system :cl-forcats)
+      (asdf:test-system :cl-forecats)
       (format t "~&OK~%")
       (uiop:quit 0))
   (error (e)
