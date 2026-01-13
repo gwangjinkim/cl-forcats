@@ -1,7 +1,9 @@
 (in-package #:cl-forcats)
 
 (defun factor (data &key levels ordered)
-  "Sugar for creating factors. If LEVELS is nil, it calculates them from DATA."
+  "Create a factor from sequence DATA. 
+If LEVELS is nil, unique values are extracted from DATA and sorted alphabetically.
+Coerces elements of DATA to strings robustly (handles symbols, numbers)."
   (let* ((data-list (coerce data 'list))
          (unique-values (if levels
                             (mapcar #'ensure-string levels)

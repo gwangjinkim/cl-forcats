@@ -1,7 +1,10 @@
 (in-package #:cl-forcats)
 
 (defun fct-count (f &key sort prop)
-  "Count occurrences of each level in factor F."
+  "Count occurrences of each level in factor F.
+Returns a list of plists: (:level \"name\" :n count [:p proportion]).
+If SORT is T, result is sorted by count descending.
+If PROP is T, includes proportion :p."
   (let* ((data (factor-data f))
          (levels (factor-levels f))
          (counts (make-hash-table :test 'eql)))

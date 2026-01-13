@@ -43,7 +43,8 @@
     (apply #'fct-relevel f new-levels)))
 
 (defun fct-reorder (f v &key (fun #'mean) desc)
-  "Reorder levels by another numeric vector V using function FUN."
+  "Reorder levels of factor F by another numeric vector V using summary function FUN.
+FUN defaults to #'MEAN. If DESC is T, sorts in descending order."
   (let* ((data (factor-data f))
          (levels (factor-levels f))
          (n (length levels))

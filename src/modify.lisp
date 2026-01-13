@@ -1,7 +1,8 @@
 (in-package #:cl-forcats)
 
 (defun fct-recode (f &rest new-levels)
-  "Rename levels of factor F. NEW-LEVELS is a list of (new-name old-name) or plists."
+  "Rename levels of factor F. 
+NEW-LEVELS can be a list of (new-name old-name) or a flattened plist: \"New\" \"Old\"."
   (let* ((levels (coerce (factor-levels f) 'list))
          (mapping (make-hash-table :test 'equal))
          (current-levels (copy-list levels)))
@@ -54,7 +55,9 @@
     (make-factor new-data :levels new-levels :ordered (factor-ordered f))))
 
 (defun fct-lump (f &key n prop (other-level "Other"))
-  "Group rare levels into 'Other'."
+  "Group rare levels into a single 'Other' level.
+If N is provided, keeps the top N levels.
+If PROP is provided, keeps levels that appear at least PROP fraction of the time."
   (let* ((counts (fct-count f :sort t))
          (to-lump nil))
     

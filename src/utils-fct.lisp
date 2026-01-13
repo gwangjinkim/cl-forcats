@@ -1,7 +1,7 @@
 (in-package #:cl-forcats)
 
 (defun fct-drop (f)
-  "Remove unused levels from factor F."
+  "Remove unused levels from factor F. Useful after filtering a dataset."
   (let* ((data (factor-data f))
          (levels (factor-levels f))
          (used-indices (sort (delete-duplicates (remove-if-not (lambda (x) (> x 0)) (coerce data 'list))) #'<))
@@ -26,7 +26,8 @@
     (make-factor (factor-data f) :levels (delete-duplicates new-levels :test #'string= :from-end t) :ordered (factor-ordered f))))
 
 (defun fct-explicit-na (f &key (na-level "(Missing)"))
-  "Convert NA (0) to a named level."
+  "Convert NA (0) references in factor F to a named level.
+The new level is added to the end of the levels vector."
   (let* ((data (factor-data f))
          (levels (coerce (factor-levels f) 'list))
          (has-na (some (lambda (x) (or (null x) (zerop x))) data)))
