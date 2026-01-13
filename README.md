@@ -11,7 +11,7 @@ Categorical variables (or factors) are variables that have a fixed and known set
 
 ---
 
-## 🚀 Quick Start for Tidyverse Fans
+## Quick Start for Tidyverse Fans
 
 If you know `forcats` in R, you are already at home. Most functions follow the mapping `fct_xxx` ⮕ `fct-xxx`.
 
@@ -29,7 +29,7 @@ If you know `forcats` in R, you are already at home. Most functions follow the m
 
 ---
 
-## 🧠 For Common Lisp Developers
+## For Common Lisp Developers
 
 ### What is a Factor?
 
@@ -70,7 +70,7 @@ Use the `factor` sugar function. It's smart enough to coerce symbols, keywords, 
 
 ---
 
-## 🛠️ Main Operations
+## Main Operations
 
 ### 1. Inspection: `fct-count`
 
@@ -113,7 +113,7 @@ Tired of having 50 categories where 45 of them only appear once? Collapse them i
 
 ---
 
-## 🔗 Tidyverse Integration
+## Tidyverse Integration
 
 `cl-forecats` is built to work seamlessly with `cl-tibble` and `cl-dplyr`.
 
@@ -157,14 +157,14 @@ If you are using a plotting library (like a future `cl-ggplot2`), you can reorde
 
 ---
 
-## 📦 Installation
+## Installation
 
 ```lisp
 ;; Not on Quicklisp yet, so clone to your local-projects
 (asdf:load-system :cl-forecats)
 ```
 
-## 🧪 Testing
+## Testing
 
 We use `FiveAM` for testing. You can run the tests via ASDF:
 
@@ -180,6 +180,6 @@ Or via the provided Roswell script:
 
 ---
 
-## 📜 License
+## License
 
 MIT
