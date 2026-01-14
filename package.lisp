@@ -1,5 +1,6 @@
 (defpackage #:cl-forcats
   (:use #:cl #:cl-vctrs-lite)
+  (:nicknames #:forcats)
   (:export #:factor
            #:factor-p
            #:factor-data
