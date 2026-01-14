@@ -5,17 +5,17 @@
 (require :asdf)
 
 (let* ((root (uiop:getcwd))
-       (asd  (merge-pathnames "cl-forecats.asd" root)))
+       (asd  (merge-pathnames "cl-forcats.asd" root)))
   (asdf:load-asd asd))
 
 ;; If you use Quicklisp, this will work after ASDF knows about the system.
-;; If you don't use Quicklisp, replace with (asdf:load-system :cl-forecats).
+;; If you don't use Quicklisp, replace with (asdf:load-system :cl-forcats).
 (handler-case
     (progn
-      (ql:quickload :cl-forecats)
-      (format t "~&cl-forecats loaded. Package: CL-FORECATS~%"))
+      (ql:quickload :cl-forcats)
+      (format t "~&cl-forcats loaded. Package: CL-FORCATS~%"))
   (error ()
-    (asdf:load-system :cl-forecats)
-    (format t "~&cl-forecats loaded via ASDF. Package: CL-FORECATS~%")))
+    (asdf:load-system :cl-forcats)
+    (format t "~&cl-forcats loaded via ASDF. Package: CL-FORCATS~%")))
 
 ;; Do not quit; drop into REPL

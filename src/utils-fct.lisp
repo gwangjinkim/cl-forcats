@@ -1,4 +1,4 @@
-(in-package #:cl-forecats)
+(in-package #:cl-forcats)
 
 (defun fct-drop (f)
   "Remove unused levels from factor F. Useful after filtering a dataset."

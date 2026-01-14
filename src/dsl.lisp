@@ -1,4 +1,4 @@
-(in-package #:cl-forecats)
+(in-package #:cl-forcats)
 
 (defun factor (data &key levels ordered)
   "Create a factor from sequence DATA. 

@@ -1,4 +1,4 @@
-(in-package #:cl-forecats)
+(in-package #:cl-forcats)
 
 (defun fct-recode (f &rest new-levels)
   "Rename levels of factor F. 

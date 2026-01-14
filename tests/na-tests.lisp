@@ -1,9 +1,9 @@
-(defpackage #:cl-forecats-na-tests
-  (:use #:cl #:cl-forecats #:fiveam #:cl-vctrs-lite))
+(defpackage #:cl-forcats-na-tests
+  (:use #:cl #:cl-forcats #:fiveam #:cl-vctrs-lite))
 
-(in-package #:cl-forecats-na-tests)
+(in-package #:cl-forcats-na-tests)
 
-(in-suite :cl-forecats-suite)
+(in-suite :cl-forcats-suite)
 
 (test na-creation
   (let ((f (factor (list "A" *na* "B" nil))))

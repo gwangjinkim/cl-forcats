@@ -1,6 +1,6 @@
-# AGENTS.md: cl-forecats Implementation Plan
+# AGENTS.md: cl-forcats Implementation Plan
 
-This document outlines the milestones for the `cl-forecats` project. Each milestone should be implemented test-first using `fiveAM`.
+This document outlines the milestones for the `cl-forcats` project. Each milestone should be implemented test-first using `fiveAM`.
 
 ## Milestone 0: Factor Data Structure
 - Define the `factor` structure/class.
