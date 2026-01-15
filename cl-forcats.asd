@@ -1,6 +1,6 @@
 (asdf:defsystem #:cl-forcats
   :description "Categorical variables (factors) for Common Lisp"
-  :author "DeepMind Antigravity"
+  :author "Gwang-Jin Kim <gwang.jin.kim.phd@gmail.com>"
   :license "MIT"
   :version "0.1.0"
   :serial t
