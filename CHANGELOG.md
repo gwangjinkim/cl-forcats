@@ -5,3 +5,10 @@ All notable changes to this project are documented here. Format follows
 ("Change Discipline") for how entries and commits are written.
 
 ## [Unreleased]
+
+### Changed
+- Stopped tracking `build/` (22 files, 796K): the ASDF/Roswell compile
+  cache that `make test` writes via `XDG_CACHE_HOME=$(PWD)/build`. It held
+  compiled fasls, including Quicklisp internals and absolute local paths.
+  `build/` is now in `.gitignore`; local files are untouched. Old copies
+  remain in history (topic: repo hygiene).
