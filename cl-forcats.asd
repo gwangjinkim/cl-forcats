@@ -9,6 +9,7 @@
                (:module "src"
                 :components ((:file "utils")
                              (:file "factor")
+                             (:file "column-types")
                              (:file "inspection")
                              (:file "reorder")
                              (:file "modify")
@@ -23,5 +24,6 @@
   :depends-on (#:cl-forcats #:fiveam)
   :components ((:module "tests"
                 :components ((:file "tests")
-                             (:file "na-tests"))))
+                             (:file "na-tests")
+                             (:file "x2-types"))))
   :perform (asdf:test-op (op c) (symbol-call :fiveam :run! :cl-forcats-suite)))

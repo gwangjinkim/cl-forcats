@@ -6,6 +6,15 @@ All notable changes to this project are documented here. Format follows
 
 ## [Unreleased]
 
+### Tests
+- `parity-X2`: 33 new checks cover factors, orderedness and every factor
+  cast boundary; all 77 checks pass (44 before).
+
+### Added
+- `parity-X2`: implement the shared column/prototype protocol for factors.
+  Factor casts re-encode labels into target levels, preserve missing codes,
+  and union levels on concatenation; incompatible ordered casts error.
+
 ### Changed
 - AGENTS.md: "Parity work" section listing this repository's parity
   milestones (FC1, FC2, FC3) and where the plan and backlog live

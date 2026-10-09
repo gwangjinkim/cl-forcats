@@ -183,3 +183,15 @@ Or via the provided Roswell script:
 ## License
 
 MIT
+
+## Shared column protocol (parity X2)
+
+Factors implement cl-vctrs-lite's column access/prototype generics.
+`col-ref` exposes labels and the shared NA singleton; the existing internal
+codes remain 1-based with 0 for missing. `vec-cast` re-encodes values into
+target levels and rejects unknown labels or incompatible ordered types.
+An empty factor prototype infers levels from character input, in encounter
+order, as R vctrs does. `vec-c` unions unordered levels in first-encounter
+order. Typed initialization, subsetting and recycling preserve the factor
+object and its levels. With cl-tibble loaded, factors can be stored,
+printed, sliced and row-bound as columns.
