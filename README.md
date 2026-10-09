@@ -13,7 +13,7 @@ Categorical variables (or factors) are variables that have a fixed and known set
 
 ## Quick Start for Tidyverse Fans
 
-If you know `forcats` in R, you are already at home. Most functions follow the mapping `fct_xxx` ⮕ `fct-xxx`.
+If you know `forcats` in R, you are already at home. Most functions follow the mapping `fct_xxx` -> `fct-xxx`.
 
 | R `forcats` | Common Lisp `cl-forcats` | Description |
 | :--- | :--- | :--- |
