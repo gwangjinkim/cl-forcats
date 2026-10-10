@@ -12,7 +12,17 @@ All notable changes to this project are documented here. Format follows
   levels and observed implicit missingness. Replace plist/list consumption
   with the shared column protocol; migration examples are in README.
 
+### Fixed
+- `parity-FC3`: Existing explicit lumping criteria now use strict R
+  proportion thresholds and tie-aware ranking. Numeric sums handle finite
+  weight overflow locally; expansion rejects fractional positions that
+  would omit levels. Legacy omission/precedence and numeric-label
+  conveniences remain pending compatibility decisions.
+
 ### Tests
+- `parity-FC3`: Package checks increase from 150 to 178, all passing;
+  127 new active R cases bring forcats to 390. Six unchanged genuine
+  default/validation mismatches are preserved separately as partial proof.
 - `parity-FC1`: All 109 package checks and 135 pinned R cases pass (77 and
   six before). Tests cover empty/NA values, factor owners, weights, numeric
   ordering, names, combination errors and approved inspection migrations.
@@ -20,6 +30,10 @@ All notable changes to this project are documented here. Format follows
   cast boundary; all 77 checks pass (44 before).
 
 ### Added
+- `parity-FC3`: Add weighted count/minimum/proportion/low-frequency lumping
+  and both NA level/value conversion APIs, preserving names, orderedness,
+  unused levels and Other-last ordering. Seeded random ties use a local
+  pinned-R-compatible uniform stream; native code never launches R.
 - `parity-FC2`: Add nine reordering/relabelling APIs, including owner-preserving
   two-column summaries, level merging and exact explicit-seed permutations.
   Repair names, stable callback order, relevel float/empty handling and recode

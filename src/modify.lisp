@@ -63,34 +63,31 @@ The deprecated :GROUP-OTHER option warns whenever supplied."
           (%refactor out (append (remove other (%unique-values labels) :test #'equal) (list other)) (factor-ordered out))
           out))))
 
-(defun fct-lump (f &key n prop (other-level "Other"))
-  "Group rare levels into a single 'Other' level.
-If N is provided, keeps the top N levels.
-If PROP is provided, keeps levels that appear at least PROP fraction of the time."
-  (let* ((counts (%legacy-count f :sort t))
-         (to-lump nil))
-    
-    (cond
-      (n
-       (setf to-lump (mapcar (lambda (x) (getf x :level)) (subseq counts (min n (length counts))))))
-      (prop
-       (setf to-lump (mapcar (lambda (x) (getf x :level))
-                             (remove-if (lambda (x) (>= (getf x :p) prop)) counts))))
-      (t
-       ;; Default lump if none specified? R lumps the smallest if we don't specify, but let's stick to requirements.
-       ))
-    
-    (if to-lump
-        (fct-collapse f (list other-level to-lump))
-        f)))
+(defun fct-lump (f &key n prop (w nil w-supplied) (other-level "Other") (ties-method "min")
+                       (seed nil seed-supplied) (random-state *random-state*))
+  "R: forcats::fct_lump(). Apply count or proportion criteria through the lumping family.
+Legacy omission identity and N-over-PROP precedence remain pending the migration decision.
+W weights observations; random ties accept a local SEED or explicit RANDOM-STATE."
+  (let* ((f (%check-factor f))
+         (options (append (when w-supplied (list :w w))
+                         (list :other-level (if (na-p other-level) other-level (ensure-string other-level))))))
+    (cond (n (apply #'fct-lump-n f n (append options (list :ties-method ties-method :random-state random-state)
+                                           (when seed-supplied (list :seed seed)))))
+          (prop (apply #'fct-lump-prop f prop options))
+          (t f))))
+
+(defun %legacy-selection-labels (x)
+  (if (listp x) (mapcar (lambda (v) (if (na-p v) v (ensure-string v))) x)
+      (%characters x)))
 
 (defun fct-other (f &key keep drop (other-level "Other"))
-  "Specifically keep or drop certain levels into 'Other'."
-  (let* ((levels (coerce (factor-levels f) 'list))
-         (to-drop (cond
-                    (keep (remove-if (lambda (l) (member l (mapcar #'ensure-string keep) :test #'string=)) levels))
-                    (drop (mapcar #'ensure-string drop))
-                    (t nil))))
-    (if to-drop
-        (fct-collapse f (list other-level to-drop))
-        f)))
+  "R: forcats::fct_other(). Replace selected or unselected levels with OTHER-LEVEL last.
+KEEP and DROP accept character columns. Legacy omission identity, KEEP precedence,
+and scalar coercion within selection lists remain pending compatibility decisions."
+  (let* ((f (%check-factor f)) (levels (factor-levels f))
+         (label (if (na-p other-level) other-level (ensure-string other-level))))
+    (cond (keep (let ((selected (%legacy-selection-labels keep)))
+                  (%levels-other f (map 'vector (lambda (x) (not (null (member x selected :test #'equal)))) levels) label)))
+          (drop (let ((selected (%legacy-selection-labels drop)))
+                  (%levels-other f (map 'vector (lambda (x) (null (member x selected :test #'equal))) levels) label)))
+          (t f))))

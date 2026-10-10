@@ -294,3 +294,45 @@ See the umbrella
 FC2 validation: 150 package checks and 263 active pinned R reference cases
 pass (128 reordering cases plus the existing 135). Six unchanged mismatches
 are retained separately as evidence for the three precise partial functions.
+
+## Lumping and missing levels (FC3)
+
+| R | Common Lisp |
+|---|---|
+| `fct_lump_n`, `fct_lump_min` | `fct-lump-n`, `fct-lump-min` |
+| `fct_lump_prop`, `fct_lump_lowfreq` | `fct-lump-prop`, `fct-lump-lowfreq` |
+| `fct_na_value_to_level`, `fct_na_level_to_value` | `fct-na-value-to-level`, `fct-na-level-to-value` |
+| `fct_drop`, `fct_expand` | `fct-drop`, `fct-expand` |
+| `fct_lump`, `fct_other` | `fct-lump`, `fct-other` |
+
+Lumping accepts nonnegative observation weights through `:w` and puts the
+other level last. `fct-lump-n` takes a count (negative keeps least frequent
+levels), with `:ties-method` min/max/average/first/last/random. Random ties
+accept explicit `:seed` using the measured default R MT19937 uniform
+stream, or a CL `:random-state`; native code never launches R.
+`fct-lump-min` keeps weights at least its threshold. `fct-lump-prop` keeps
+proportions strictly greater than its threshold, or at most the absolute
+negative threshold. Missing observations contribute to its denominator.
+`fct-lump-lowfreq` combines low frequencies while Other stays smallest.
+
+`fct-na-value-to-level` turns implicit missing codes into an explicit NA
+level or a supplied string `:level`. `fct-na-level-to-value` reverses that
+operation and can remove additional `:extra-levels`. Local operations
+preserve factor codes, names, orderedness and unused levels. The shared X2
+prototype still requires unique string levels: convert explicit NA levels
+back to values before generic cast/subsetting pipelines. `fct-drop` accepts
+`:only`; `fct-expand` accepts vector labels and zero-based `:after`.
+
+Three existing FC3 APIs remain partial pending compatibility decisions.
+`fct-lump` retains omitted-criteria identity and N-over-PROP precedence.
+`fct-other` retains omitted-selection identity, KEEP precedence and numeric
+selection-list coercion. Existing wrappers still stringify numeric other
+labels. `fct-expand` retains numeric label coercion. The umbrella
+`docs/TB1-FC3-COMPATIBILITY-PROPOSAL.md` and preserved pending R cases record
+these differences; no approval has been inferred from the parity goal.
+
+Validation: 178 package checks and 390 active pinned R 4.6.1 / forcats
+1.0.1 cases pass (127 lumping cases plus 263 previous cases). Six unchanged
+compatibility mismatches are preserved separately without parity credit.
+Strict proportion thresholds, overflowing finite weights and fractional
+insertion positions received genuine red cases before repair.
