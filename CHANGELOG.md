@@ -6,11 +6,24 @@ All notable changes to this project are documented here. Format follows
 
 ## [Unreleased]
 
+### Breaking
+- `parity-FC1`: With explicit maintainer approval, FCT-COUNT returns a tibble
+  with f/n/optional p columns and FCT-UNIQUE returns a factor containing all
+  levels and observed implicit missingness. Replace plist/list consumption
+  with the shared column protocol; migration examples are in README.
+
 ### Tests
+- `parity-FC1`: All 109 package checks and 135 pinned R cases pass (77 and
+  six before). Tests cover empty/NA values, factor owners, weights, numeric
+  ordering, names, combination errors and approved inspection migrations.
 - `parity-X2`: 33 new checks cover factors, orderedness and every factor
   cast boundary; all 77 checks pass (44 before).
 
 ### Added
+- `parity-FC1`: Add nine creation, conversion, combination, level-union,
+  ordering and matching APIs from forcats 1.0.1. AS-FACTOR supports CLOS
+  extension; weighted frequency ordering, names, unused levels and missing
+  values follow pinned reference cases.
 - `parity-X2`: implement the shared column/prototype protocol for factors.
   Factor casts re-encode labels into target levels, preserve missing codes,
   and union levels on concatenation; incompatible ordered casts error.

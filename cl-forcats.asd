@@ -4,12 +4,13 @@
   :license "MIT"
   :version "0.1.0"
   :serial t
-  :depends-on (#:cl-vctrs-lite #:cl-ppcre #:alexandria #:serapeum)
+  :depends-on (#:cl-vctrs-lite #:cl-tibble #:cl-ppcre #:alexandria #:serapeum)
   :components ((:file "package")
                (:module "src"
                 :components ((:file "utils")
                              (:file "factor")
                              (:file "column-types")
+                             (:file "creation")
                              (:file "inspection")
                              (:file "reorder")
                              (:file "modify")
@@ -25,5 +26,6 @@
   :components ((:module "tests"
                 :components ((:file "tests")
                              (:file "na-tests")
-                             (:file "x2-types"))))
+                             (:file "x2-types")
+                             (:file "creation"))))
   :perform (asdf:test-op (op c) (symbol-call :fiveam :run! :cl-forcats-suite)))

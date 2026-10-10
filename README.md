@@ -74,11 +74,11 @@ Use the `factor` sugar function. It's smart enough to coerce symbols, keywords, 
 
 ### 1. Inspection: `fct-count`
 
-Get a quick overview of your categories. Returns a list of plists with `:level` and `:n`.
+Get a quick overview of your categories. Returns a tibble with factor `f` and integer `n` columns; `:prop t` adds double `p`. Unused levels and observed missing values have rows. This replaces the old plist result with the maintainer-approved R contract.
 
 ```lisp
-(fct-count (factor '(a b a a c)))
-;; => ((:LEVEL "A" :N 3) (:LEVEL "B" :N 1) (:LEVEL "C" :N 1))
+(let ((counts (fct-count (fct #("a" "b" "a" "a" "c")))))
+  (cl-tibble:tbl-col counts "n")) ; #(3 1 1)
 ```
 
 ### 2. Reordering: `fct-reorder`
@@ -195,3 +195,55 @@ order, as R vctrs does. `vec-c` unions unordered levels in first-encounter
 order. Typed initialization, subsetting and recycling preserve the factor
 object and its levels. With cl-tibble loaded, factors can be stored,
 printed, sliced and row-bound as columns.
+
+## Creating and combining factors (FC1)
+
+| R | Common Lisp |
+|---|---|
+| `as_factor` | `as-factor` (CLOS generic) |
+| `fct` | `fct` |
+| `fct_c` | `fct-c` |
+| `fct_cross` | `fct-cross` |
+| `fct_unify` | `fct-unify` |
+| `lvls_union` | `lvls-union` |
+| `fct_inorder` | `fct-inorder` |
+| `fct_inseq` | `fct-inseq` |
+| `fct_infreq` | `fct-infreq` |
+| `fct_match` | `fct-match` |
+| `fct_count` | `fct-count` |
+| `fct_unique` | `fct-unique` |
+
+`fct` accepts character input, infers levels in first-appearance order and
+rejects unknown values with explicit levels. `as-factor` preserves factors,
+uses appearance order for characters, numeric order for numbers and
+FALSE/TRUE levels for logical input. Scalar NIL is FALSE; use a typed empty
+column for an empty atomic input. Factor names and orderedness survive where
+R retains them. `fct-infreq` accepts optional nonnegative observation weights.
+The order functions accept `:ordered` T/NIL or the shared NA to preserve it.
+
+`fct-c` takes factors as rest arguments; APPLY splices a factor list.
+`fct-unify` takes a list/alist/typed :LIST, retaining its names and applying
+a complete union of levels (or explicit `:levels`). `fct-cross` accepts
+`:sep` and `:keep-empty`, recycles scalar inputs and rejects incompatible
+sizes. `fct-match` returns a logical column and rejects unknown levels.
+
+**Approved return migrations:** `fct-count` now returns a tibble; read
+counts with `(col-ref (cl-tibble:tbl-col (fct-count f) "n") 0)` instead of
+GETF on plist rows. `fct-unique` now returns a factor with every level,
+including unused levels, plus an implicit missing observation if present;
+read labels through `col-ref` rather than treating it as a list. Existing
+`fct-lump` keeps its private legacy count adapter and unchanged return shape.
+
+Explicit NA factor levels work in the local FC1 operations, including
+count/unique. The shared X2 prototype still requires unique string levels,
+so generic cast/prototype pipelines with NA levels retain that restriction.
+Empty proportions use actual IEEE NaN on SBCL; other implementations require
+equivalent IEEE support. No full-platform or locale parity is claimed.
+
+Validation: 109 package checks and 135 pinned R 4.6.1 / forcats 1.0.1
+reference cases pass (129 creation cases plus six baseline cases). Run
+`../cl-tidystat/scripts/run-tests.sh cl-forcats` and the umbrella conformance
+runner. Reference contracts: [creation](https://forcats.tidyverse.org/reference/fct.html),
+[conversion](https://forcats.tidyverse.org/reference/as_factor.html),
+[count](https://forcats.tidyverse.org/reference/fct_count.html), and
+[unique](https://forcats.tidyverse.org/reference/fct_unique.html).

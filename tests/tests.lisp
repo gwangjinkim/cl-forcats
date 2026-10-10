@@ -14,9 +14,9 @@
 
 (test inspection-api
   (let ((f (make-factor #(1 2 1 0 2) :levels '("A" "B"))))
-    (is (equalp (fct-count f) '((:level "A" :n 2) (:level "B" :n 2))))
-    (is (equalp (fct-unique f) '("A" "B")))
-    (is (equalp (fct-count f :sort t) '((:level "A" :n 2) (:level "B" :n 2))))))
+    (is (equalp (cl-tibble:tbl-col (fct-count f) "n") #(2 2 1)))
+    (is (equalp (factor-data (fct-unique f)) #(1 2 0)))
+    (is (equalp (cl-tibble:tbl-col (fct-count f :sort t) "n") #(2 2 1)))))
 
 (test reordering-api
   (let ((f (make-factor #(1 2 1) :levels '("A" "B"))))
@@ -65,7 +65,7 @@
     ;; Lump and count
     (let ((f-lump (fct-lump f :n 1)))
       (is (equalp (fct-levels f-lump) #("apple" "Other")))
-      (is (equalp (fct-count f-lump) '((:level "apple" :n 3) (:level "Other" :n 3)))))))
+      (is (equalp (cl-tibble:tbl-col (fct-count f-lump) "n") #(3 3))))))
 
 (test edge-cases
   ;; Empty factor

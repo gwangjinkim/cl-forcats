@@ -58,7 +58,7 @@ NEW-LEVELS can be a list of (new-name old-name) or a flattened plist: \"New\" \"
   "Group rare levels into a single 'Other' level.
 If N is provided, keeps the top N levels.
 If PROP is provided, keeps levels that appear at least PROP fraction of the time."
-  (let* ((counts (fct-count f :sort t))
+  (let* ((counts (%legacy-count f :sort t))
          (to-lump nil))
     
     (cond
