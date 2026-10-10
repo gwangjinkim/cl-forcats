@@ -36,11 +36,23 @@
     
     (make-factor new-data :levels new-levels :ordered (factor-ordered f))))
 
-(defun fct-infreq (f)
-  "Reorder levels by frequency."
-  (let* ((counts (fct-count f :sort t))
-         (new-levels (mapcar (lambda (x) (getf x :level)) counts)))
-    (apply #'fct-relevel f new-levels)))
+(defun fct-infreq (f &key (w nil supplied) (ordered *na*))
+  "R: forcats::fct_infreq(). Sort by decreasing (optionally weighted) frequency.
+Omit W for default unit weights; supplied NIL is logical FALSE and errors.
+W must contain one nonnegative numeric weight per observation. Ties retain level order."
+  (let* ((f (%check-factor f)) (size (col-length f))
+         (weights (when supplied (%input-column w)))
+         (counts (make-array (length (factor-levels f)) :initial-element 0)))
+    (when weights
+      (unless (and (member (col-type weights) '(:int :double)) (= size (col-length weights)))
+        (error "Weights must be numeric and match input length"))
+      (dotimes (i size)
+        (let ((value (col-ref weights i)))
+          (unless (and (realp value) (>= value 0)) (error "Weights must be nonnegative and nonmissing")))))
+    (loop for code across (factor-data f) for i from 0
+          when (> code 0) do (incf (aref counts (1- code)) (if weights (col-ref weights i) 1)))
+    (let ((indices (stable-sort (loop for i below (length counts) collect i) #'> :key (lambda (i) (aref counts i)))))
+      (%refactor f (mapcar (lambda (i) (aref (factor-levels f) i)) indices) (%ordered-option ordered f)))))
 
 (defun fct-reorder (f v &key (fun #'mean) desc)
   "Reorder levels of factor F by another numeric vector V using summary function FUN.
