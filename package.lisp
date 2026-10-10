@@ -1,7 +1,9 @@
 (defpackage #:cl-forcats
   (:use #:cl #:cl-vctrs-lite)
   (:nicknames #:forcats)
-  (:export #:fct #:as-factor #:fct-c #:fct-cross #:fct-unify
+  (:export #:fct-anon #:fct-shuffle #:fct-relabel #:fct-reorder2
+           #:first2 #:last2 #:lvls-reorder #:lvls-revalue #:lvls-expand
+           #:fct #:as-factor #:fct-c #:fct-cross #:fct-unify
            #:lvls-union #:fct-inorder #:fct-inseq #:fct-match
            #:factor
            #:factor-p

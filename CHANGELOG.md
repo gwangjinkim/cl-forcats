@@ -20,6 +20,12 @@ All notable changes to this project are documented here. Format follows
   cast boundary; all 77 checks pass (44 before).
 
 ### Added
+- `parity-FC2`: Add nine reordering/relabelling APIs, including owner-preserving
+  two-column summaries, level merging and exact explicit-seed permutations.
+  Repair names, stable callback order, relevel float/empty handling and recode
+  removal of explicit NA levels. All 150 package checks and 263 active pinned
+  R cases pass (109 and 135 before). Mean/empty/missing reorder defaults and
+  numeric recode/relevel coercion retain their legacy behavior and stay partial.
 - `parity-FC1`: Add nine creation, conversion, combination, level-union,
   ordering and matching APIs from forcats 1.0.1. AS-FACTOR supports CLOS
   extension; weighted frequency ordering, names, unused levels and missing

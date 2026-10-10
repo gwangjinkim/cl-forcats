@@ -247,3 +247,50 @@ runner. Reference contracts: [creation](https://forcats.tidyverse.org/reference/
 [conversion](https://forcats.tidyverse.org/reference/as_factor.html),
 [count](https://forcats.tidyverse.org/reference/fct_count.html), and
 [unique](https://forcats.tidyverse.org/reference/fct_unique.html).
+
+## Reordering and relabelling (FC2)
+
+| R | Common Lisp |
+|---|---|
+| `fct_reorder2` | `fct-reorder2` |
+| `first2`, `last2` | `first2`, `last2` |
+| `fct_relabel` | `fct-relabel` |
+| `fct_anon`, `fct_shuffle` | `fct-anon`, `fct-shuffle` |
+| `lvls_reorder`, `lvls_revalue`, `lvls_expand` | `lvls-reorder`, `lvls-revalue`, `lvls-expand` |
+
+`lvls-reorder` takes zero-based indices and optional `:ordered`; revalue
+merges duplicate labels, and expand requires all existing levels. Factor
+codes, names, orderedness and explicit NA levels survive local operations.
+`fct-relabel` calls its function once on the complete typed level vector,
+then passes its rest arguments. The function must return character labels.
+`fct-relevel` accepts a sole level-vector callback or named levels, with
+`:after` zero, a nonnegative whole number or positive infinity.
+
+`first2`/`last2` return a size-one owner column from Y after stable ordering
+by X, dropping rows missing in either input; an empty selection returns
+owner-typed NA. `fct-reorder2` calls `:fun` with two owner columns in
+observation order, followed by `:args`. Its defaults are `last2`, decreasing
+order and negative infinity for unused levels. Omitted `:na-rm` removes
+missing X/Y rows with a warning; `:na-rm t` is silent, NIL keeps them.
+The returned factor follows the measured R row removal.
+
+`fct-shuffle` and `fct-anon` accept `:seed` (an integer from -2147483647 to 2147483647) for
+exact local compatibility with the pinned R default Mersenne-Twister /
+rejection sampler, or `:random-state` for a Common Lisp stream. Calls never
+launch R or change an R global stream. `fct-anon` also takes a string
+`:prefix` and errors on an empty factor, as R does. Alternative R RNG kinds
+are outside this explicit default-stream comparison.
+
+Three existing functions remain **partial** pending explicit compatibility
+approval. `fct-reorder` retains mean and legacy empty/missing defaults; its
+callback still receives a list. Additive `:default`, `:na-rm` and `:args`
+options work, and callback values now follow observation order.
+`fct-recode` retains numeric old-label coercion, where R errors; string
+specifications merge/remove levels, and unknown levels warn.
+`fct-relevel` also retains numeric scalar label coercion, where R errors.
+See the umbrella
+`docs/FC2-REORDER-PROPOSAL.md` and its preserved pending R evidence.
+
+FC2 validation: 150 package checks and 263 active pinned R reference cases
+pass (128 reordering cases plus the existing 135). Six unchanged mismatches
+are retained separately as evidence for the three precise partial functions.

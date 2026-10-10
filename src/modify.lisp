@@ -1,58 +1,67 @@
 (in-package #:cl-forcats)
 
+(defun %level-pairs (spec)
+  (if (and spec (consp (first spec)))
+      (progn (unless (every (lambda (x) (and (listp x) (= 2 (length x)))) spec)
+               (error "Level specifications must be pairs")) spec)
+      (progn (unless (evenp (length spec)) (error "Level specifications must be pairs"))
+             (plist-to-pairs spec))))
+
 (defun fct-recode (f &rest new-levels)
-  "Rename levels of factor F. 
-NEW-LEVELS can be a list of (new-name old-name) or a flattened plist: \"New\" \"Old\"."
-  (let* ((levels (coerce (factor-levels f) 'list))
-         (mapping (make-hash-table :test 'equal))
-         (current-levels (copy-list levels)))
-    
-    ;; Handle both list of lists and flattened plist
-    (let ((pairs (if (listp (car new-levels)) new-levels (plist-to-pairs new-levels))))
-      (loop for pair in pairs
-            do (let ((new (ensure-string (first pair)))
-                     (old (ensure-string (second pair))))
-                 (setf (gethash old mapping) new))))
-    
-    (let ((updated-levels (mapcar (lambda (l) (gethash l mapping l)) current-levels)))
-      (make-factor (factor-data f) :levels updated-levels :ordered (factor-ordered f)))))
+  "R: forcats::fct_recode(). Rename or merge levels using new/old pairs.
+NIL as a new name removes the corresponding old level. Unknown levels warn.
+Legacy scalar old-label coercion remains available pending the parity migration decision."
+  (let* ((f (%check-factor f)) (old (coerce (factor-levels f) 'list))
+         (labels (copy-list old)) (removed nil))
+    (dolist (pair (%level-pairs new-levels))
+      (let* ((new (first pair)) (previous (ensure-string (second pair)))
+             (i (position previous old :test #'equal)))
+        (if i (if (null new) (push previous removed)
+                  (setf (nth i labels) (ensure-string new)))
+            (warn "Unknown level ~s in FCT-RECODE" previous))))
+    (if removed
+        (%factor-values (loop for code across (factor-data f) collect
+                          (if (or (zerop code) (member (nth (1- code) old) removed :test #'equal))
+                              *na* (nth (1- code) labels)))
+                        (%unique-values (loop for x in old for label in labels
+                                               unless (or (member x removed :test #'equal) (na-p label)) collect label))
+                        :ordered (factor-ordered f) :names (col-names f))
+        (lvls-revalue f (make-typed-column (coerce labels 'vector) :string)))))
 
 (defun fct-collapse (f &rest group-definitions)
-  "Collapse multiple levels into one. GROUP-DEFINITIONS is (group-name (old-level1 old-level2 ...))."
-  (let* ((old-levels (coerce (factor-levels f) 'list))
-         (new-levels nil)
-         (mapping (make-hash-table :test 'equal)) ; level -> group
-         (data (factor-data f))
-         (new-data (make-array (length data) :element-type (array-element-type data))))
-    
-    (let ((groups (if (listp (car group-definitions)) group-definitions (plist-to-pairs group-definitions))))
-      (loop for group in groups
-            for group-name = (ensure-string (first group))
-            for old-list = (mapcar #'ensure-string (alexandria:ensure-list (second group)))
-            do (loop for old in old-list
-                     do (setf (gethash old mapping) group-name))))
-    
-    ;; Determine new levels
-    (loop for l in old-levels
-          for group-name = (gethash l mapping)
-          do (if group-name
-                 (pushnew group-name new-levels :test #'string=)
-                 (pushnew l new-levels :test #'string=)))
-    (setf new-levels (nreverse new-levels))
-    
-    ;; Map data
-    (let ((old-idx-to-new-idx (make-hash-table :test 'eql)))
-      (loop for old-l in old-levels
-            for old-idx from 1
-            do (let* ((group-name (gethash old-l mapping old-l))
-                      (new-idx (1+ (position group-name new-levels :test #'string=))))
-                 (setf (gethash old-idx old-idx-to-new-idx) new-idx)))
-      
-      (loop for i from 0 below (length data)
-            for x = (aref data i)
-            do (setf (aref new-data i) (if (and x (> x 0)) (gethash x old-idx-to-new-idx 0) x))))
-    
-    (make-factor new-data :levels new-levels :ordered (factor-ordered f))))
+  "R: forcats::fct_collapse(). Merge named groups of existing levels.
+:OTHER-LEVEL places unassigned levels in one final level. Unknown levels warn.
+The deprecated :GROUP-OTHER option warns whenever supplied."
+  (let* ((f (%check-factor f)) (old (coerce (factor-levels f) 'list))
+         (labels (copy-list old)) (assigned nil) (spec nil) (other nil) (other-supplied nil)
+         (deprecated nil) (deprecated-supplied nil))
+    (loop while group-definitions do
+      (let ((key (pop group-definitions)))
+        (cond ((eq key :other-level) (unless group-definitions (error "Missing OTHER-LEVEL"))
+                                     (setf other (pop group-definitions) other-supplied t))
+              ((eq key :group-other) (unless group-definitions (error "Missing GROUP-OTHER"))
+                                    (setf deprecated (pop group-definitions) deprecated-supplied t))
+              ((consp key) (push key spec))
+              (t (unless group-definitions (error "Missing group values"))
+                 (push (list key (pop group-definitions)) spec)))))
+    (when deprecated-supplied (%check-boolean deprecated) (warn "GROUP-OTHER is deprecated")
+          (when (and deprecated (not other-supplied)) (setf other "Other")))
+    (when (and other (not (or (stringp other) (na-p other)))) (error "OTHER-LEVEL must be a string or NA"))
+    (dolist (pair (%level-pairs (nreverse spec)))
+      (let* ((name (ensure-string (first pair))) (values (second pair))
+             (previous (if (or (stringp values) (numberp values) (symbolp values))
+                           (list (ensure-string values))
+                           (mapcar #'ensure-string (col->list (%input-column values))))))
+        (dolist (x previous)
+          (let ((i (position x old :test #'equal)))
+            (if i (progn (pushnew x assigned :test #'equal) (setf (nth i labels) name))
+                (warn "Unknown level ~s in FCT-COLLAPSE" x))))))
+    (when other
+      (loop for x in old for i from 0 unless (member x assigned :test #'equal) do (setf (nth i labels) other)))
+    (let ((out (lvls-revalue f (make-typed-column (coerce labels 'vector) :string))))
+      (if (and other (member other labels :test #'equal))
+          (%refactor out (append (remove other (%unique-values labels) :test #'equal) (list other)) (factor-ordered out))
+          out))))
 
 (defun fct-lump (f &key n prop (other-level "Other"))
   "Group rare levels into a single 'Other' level.
